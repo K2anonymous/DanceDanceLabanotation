@@ -15,6 +15,64 @@ public class UI_Script : MonoBehaviour
     [Header("Display Options")]
     public bool showBackground = true;
 
+    private void Awake()
+    {
+        if (background != null)
+            background.enabled = showBackground;
+    }
+
+    /// <summary>
+    /// Show a left-hand symbol (0–26).
+    /// Clear/empty symbol (-1)
+    /// </summary>
+    public void ShowLeftSymbol(int index)
+    {
+        if (index == -1)
+        {
+            if (leftSymbolSlot != null) leftSymbolSlot.enabled = false;
+            return;
+        }
+        if (index < 0 || index >= leftHandSymbols.Length)
+        {
+            Debug.LogWarning("NoteDisplayManager: Left symbol index out of range.");
+            return;
+        }
+
+        if (leftSymbolSlot != null)
+        {
+            leftSymbolSlot.texture = leftHandSymbols[index];
+            leftSymbolSlot.enabled = true;
+        }
+    }
+
+    /// <summary>
+    /// Show a right-hand symbol (0–26).
+    /// Clear/empty symbol (-1)
+    /// </summary>
+    public void ShowRightSymbol(int index)
+    {
+        
+        if(index == -1)
+        {
+            if (rightSymbolSlot != null) rightSymbolSlot.enabled = false;
+            return;
+        }
+        if (index < 0 || index >= rightHandSymbols.Length)
+        {
+            Debug.LogWarning("NoteDisplayManager: Right symbol index out of range.");
+            return;
+        }
+
+        if (rightSymbolSlot != null)
+        {
+            rightSymbolSlot.texture = rightHandSymbols[index];
+            rightSymbolSlot.enabled = true;
+        }
+    }
+
+
+    ///Legacy Note Calling
+
     /// <summary>
     /// Call this with a value 0–53 to display the corresponding note symbol.
     /// Left side is 0–26, right side is 27–53.
