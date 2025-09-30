@@ -4,17 +4,18 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Rounds Settings")]
     // An Inspector slider for the total number of rounds in this play session.
     [Range(1, 9)]
     public int totalRounds;
 
     public bool randomRounds = false;
-    public bool timeDelay = false;
-
-    public int timeBetweenRounds = 3;
-
     // The current round that the player is on.
     private int currentRound = -1;
+
+    [Header("Time Delay Settings")]
+    public bool timeDelay = false;
+    public int timeBetweenRounds = 3;
 
     // The current state of each arm.
     [HideInInspector]
@@ -27,6 +28,10 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public bool lastRoundSuccess = true;
 
+    [Header("Display Settings")]
+    public GameObject UICanvas;
+    private UI_Script UIManager;
+
     private void Start()
     {
         if (currentRound < 0)
@@ -36,6 +41,12 @@ public class GameManager : MonoBehaviour
 
         leftArmPositions = new Dictionary<int, int>();
         rightArmPositions = new Dictionary<int, int>();
+
+        UIManager = UICanvas.GetComponent<UI_Script>();
+        if (UIManager == null)
+        {
+            Debug.LogWarning("UIManager not found.");
+        }
 
         if (randomRounds)
         {
@@ -89,6 +100,7 @@ public class GameManager : MonoBehaviour
         {
             leftArm = entry.Value;
             Debug.Log($"Left Arm: {leftArm}");
+            UIManager.ShowLeftSymbol(leftArm);
             yield return new WaitForSeconds(timeBetweenRounds);
         }
     }
@@ -102,6 +114,7 @@ public class GameManager : MonoBehaviour
         {
             rightArm = entry.Value;
             Debug.Log($"Right Arm: {rightArm}");
+            UIManager.ShowRightSymbol(rightArm);
             yield return new WaitForSeconds(timeBetweenRounds);
         }
     }
@@ -116,9 +129,11 @@ public class GameManager : MonoBehaviour
         {
             if (lastRoundSuccess)
             {
-                currentRound++;
                 leftArm = leftArmPositions[currentRound];
+                UIManager.ShowLeftSymbol(leftArm);
                 rightArm = rightArmPositions[currentRound];
+                UIManager.ShowRightSymbol(rightArm);
+                currentRound++;
             }
             Debug.Log($"Left Arm: {leftArm}");
             Debug.Log($"Right Arm: {rightArm}");
