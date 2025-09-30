@@ -243,11 +243,7 @@ MonoBehaviour:
   idleColor: {r: 1, g: 1, b: 1, a: 1}
   correctColor: {r: 0, g: 1, b: 0, a: 1}
   incorrectColor: {r: 1, g: 0, b: 0, a: 1}
-  isCorrectPosition: 1
-  testingMode: 0
-  testKeyCorrect: 99
-  testKeyIncorrect: 105
-  testKeyIdle: 32
+  standaloneTestMode: 1
 --- !u!1 &229971790
 GameObject:
   m_ObjectHideFlags: 0
@@ -372,11 +368,7 @@ MonoBehaviour:
   idleColor: {r: 1, g: 1, b: 1, a: 1}
   correctColor: {r: 0, g: 1, b: 0, a: 1}
   incorrectColor: {r: 1, g: 0, b: 0, a: 1}
-  isCorrectPosition: 0
-  testingMode: 0
-  testKeyCorrect: 99
-  testKeyIncorrect: 105
-  testKeyIdle: 32
+  standaloneTestMode: 1
 --- !u!1 &299639867
 GameObject:
   m_ObjectHideFlags: 0
@@ -622,11 +614,7 @@ MonoBehaviour:
   idleColor: {r: 1, g: 1, b: 1, a: 1}
   correctColor: {r: 0, g: 1, b: 0, a: 1}
   incorrectColor: {r: 1, g: 0, b: 0, a: 1}
-  isCorrectPosition: 0
-  testingMode: 0
-  testKeyCorrect: 99
-  testKeyIncorrect: 105
-  testKeyIdle: 32
+  standaloneTestMode: 1
 --- !u!1 &393616917
 GameObject:
   m_ObjectHideFlags: 0
@@ -751,11 +739,7 @@ MonoBehaviour:
   idleColor: {r: 1, g: 1, b: 1, a: 1}
   correctColor: {r: 0, g: 1, b: 0, a: 1}
   incorrectColor: {r: 1, g: 0, b: 0, a: 1}
-  isCorrectPosition: 0
-  testingMode: 0
-  testKeyCorrect: 99
-  testKeyIncorrect: 105
-  testKeyIdle: 32
+  standaloneTestMode: 1
 --- !u!1001 &441087506
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -771,6 +755,10 @@ PrefabInstance:
     - target: {fileID: 202364688, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1670256624, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_TagString
+      value: PlayerArm
       objectReference: {fileID: 0}
     - target: {fileID: 1717954561962503725, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_Name
@@ -897,7 +885,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -1029,11 +1017,7 @@ MonoBehaviour:
   idleColor: {r: 1, g: 1, b: 1, a: 1}
   correctColor: {r: 0, g: 1, b: 0, a: 1}
   incorrectColor: {r: 1, g: 0, b: 0, a: 1}
-  isCorrectPosition: 0
-  testingMode: 0
-  testKeyCorrect: 99
-  testKeyIncorrect: 105
-  testKeyIdle: 32
+  standaloneTestMode: 1
 --- !u!1 &1089444004
 GameObject:
   m_ObjectHideFlags: 0
@@ -1158,11 +1142,7 @@ MonoBehaviour:
   idleColor: {r: 1, g: 1, b: 1, a: 1}
   correctColor: {r: 0, g: 1, b: 0, a: 1}
   incorrectColor: {r: 1, g: 0, b: 0, a: 1}
-  isCorrectPosition: 0
-  testingMode: 0
-  testKeyCorrect: 99
-  testKeyIncorrect: 105
-  testKeyIdle: 32
+  standaloneTestMode: 1
 --- !u!1 &1249617917
 GameObject:
   m_ObjectHideFlags: 0
@@ -1478,11 +1458,7 @@ MonoBehaviour:
   idleColor: {r: 1, g: 1, b: 1, a: 1}
   correctColor: {r: 0, g: 1, b: 0, a: 1}
   incorrectColor: {r: 1, g: 0, b: 0, a: 1}
-  isCorrectPosition: 0
-  testingMode: 0
-  testKeyCorrect: 99
-  testKeyIncorrect: 105
-  testKeyIdle: 32
+  standaloneTestMode: 1
 --- !u!1 &1609536350 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1670256624, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
@@ -1503,7 +1479,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -1635,11 +1611,7 @@ MonoBehaviour:
   idleColor: {r: 1, g: 1, b: 1, a: 1}
   correctColor: {r: 0, g: 1, b: 0, a: 1}
   incorrectColor: {r: 1, g: 0, b: 0, a: 1}
-  isCorrectPosition: 0
-  testingMode: 0
-  testKeyCorrect: 99
-  testKeyIncorrect: 105
-  testKeyIdle: 32
+  standaloneTestMode: 1
 --- !u!1 &1922195643
 GameObject:
   m_ObjectHideFlags: 0
@@ -1764,11 +1736,7 @@ MonoBehaviour:
   idleColor: {r: 1, g: 1, b: 1, a: 1}
   correctColor: {r: 0, g: 1, b: 0, a: 1}
   incorrectColor: {r: 1, g: 0, b: 0, a: 1}
-  isCorrectPosition: 0
-  testingMode: 0
-  testKeyCorrect: 99
-  testKeyIncorrect: 105
-  testKeyIdle: 32
+  standaloneTestMode: 1
 --- !u!1 &2092139007
 GameObject:
   m_ObjectHideFlags: 0
