@@ -1,0 +1,126 @@
+using UnityEngine;
+using UnityEngine.UI;
+
+public class UI_Script : MonoBehaviour
+{
+    [Header("UI References")]
+    public Image background;              // Main background for the note display
+    public RawImage leftSymbolSlot;          // UI slot for left-hand symbols
+    public RawImage rightSymbolSlot;         // UI slot for right-hand symbols
+
+    [Header("Symbol Sets")]
+    public Texture[] leftHandSymbols;      // 27 Textures for left-hand (indexes 0–26)
+    public Texture[] rightHandSymbols;     // 27 Textures for right-hand (indexes 27–53)
+
+    [Header("Display Options")]
+    public bool showBackground = true;
+
+    private void Awake()
+    {
+        if (background != null)
+            background.enabled = showBackground;
+    }
+
+    /// <summary>
+    /// Show a left-hand symbol (0–26).
+    /// Clear/empty symbol (-1)
+    /// </summary>
+    public void ShowLeftSymbol(int index)
+    {
+        if (index == -1)
+        {
+            if (leftSymbolSlot != null) leftSymbolSlot.enabled = false;
+            return;
+        }
+        if (index < 0 || index >= leftHandSymbols.Length)
+        {
+            Debug.LogWarning("NoteDisplayManager: Left symbol index out of range.");
+            return;
+        }
+
+        if (leftSymbolSlot != null)
+        {
+            leftSymbolSlot.texture = leftHandSymbols[index];
+            leftSymbolSlot.enabled = true;
+        }
+    }
+
+    /// <summary>
+    /// Show a right-hand symbol (0–26).
+    /// Clear/empty symbol (-1)
+    /// </summary>
+    public void ShowRightSymbol(int index)
+    {
+        
+        if(index == -1)
+        {
+            if (rightSymbolSlot != null) rightSymbolSlot.enabled = false;
+            return;
+        }
+        if (index < 0 || index >= rightHandSymbols.Length)
+        {
+            Debug.LogWarning("NoteDisplayManager: Right symbol index out of range.");
+            return;
+        }
+
+        if (rightSymbolSlot != null)
+        {
+            rightSymbolSlot.texture = rightHandSymbols[index];
+            rightSymbolSlot.enabled = true;
+        }
+    }
+
+
+    ///Legacy Note Calling
+
+    /// <summary>
+    /// Call this with a value 0–53 to display the corresponding note symbol.
+    /// Left side is 0–26, right side is 27–53.
+    /// </summary>
+    public void ShowNoteSymbol(int index)
+    {
+        if (index < 0 || index > 53)
+        {
+            Debug.LogWarning("NoteDisplayManager: Index out of range (0–53).");
+            return;
+        }
+
+        // Enable background if needed
+        if (background != null)
+            background.enabled = showBackground;
+
+        // Clear both slots first
+        if (leftSymbolSlot != null) leftSymbolSlot.texture = null;
+        if (rightSymbolSlot != null) rightSymbolSlot.texture = null;
+
+        // Left-hand symbols
+        if (index < 27)
+        {
+            if (leftSymbolSlot != null && index < leftHandSymbols.Length)
+            {
+                leftSymbolSlot.texture = leftHandSymbols[index];
+                leftSymbolSlot.enabled = true;
+            }
+        }
+        // Right-hand symbols
+        else
+        {
+            int rightIndex = index - 27;
+            if (rightSymbolSlot != null && rightIndex < rightHandSymbols.Length)
+            {
+                rightSymbolSlot.texture = rightHandSymbols[rightIndex];
+                rightSymbolSlot.enabled = true;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Hides the UI symbols (use when no note is active).
+    /// </summary>
+    public void ClearSymbols()
+    {
+        if (leftSymbolSlot != null) leftSymbolSlot.enabled = false;
+        if (rightSymbolSlot != null) rightSymbolSlot.enabled = false;
+        if (background != null) background.enabled = false;
+    }
+}
