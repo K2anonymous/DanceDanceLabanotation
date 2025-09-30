@@ -80,6 +80,9 @@ public class GameManager : MonoBehaviour
         **/
     }
 
+    /// <summary>
+    /// Updates leftArm after a number of seconds.
+    /// </summary>
     IEnumerator UpdateLeftArmPositions()
     {
         foreach(KeyValuePair<int,int> entry in leftArmPositions)
@@ -90,6 +93,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates rightArm after a number of seconds.
+    /// </summary>
     IEnumerator UpdateRightArmPositions()
     {
         foreach(KeyValuePair<int,int> entry in rightArmPositions)
@@ -100,6 +106,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates leftArm and rightArm variables as the previous positions are met.
+    /// </summary>
+    /// <param name="lastRoundSuccess">True if the previous round was successfully completed; False if not.</param>
     public void UpdateArmPositions(bool lastRoundSuccess)
     {
         for (int i = 0;i < totalRounds; i++)
