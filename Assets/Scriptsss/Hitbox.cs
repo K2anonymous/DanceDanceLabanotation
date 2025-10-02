@@ -43,10 +43,14 @@ public class Hitbox : MonoBehaviour
 
         //if (!other.CompareTag("PlayerArm")) return;
         Debug.Log("PlayerArm tag");
-        if (isActiveTarget)
+        if (isActiveTarget && other.tag == "PlayerArm")
         {
             Debug.Log("active target");
             SetColor(correctColor);
+        }
+        else if(other.tag == "blah blah")
+        {
+            return;
         }
         else
         {
