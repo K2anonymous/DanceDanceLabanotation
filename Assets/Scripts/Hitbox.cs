@@ -12,7 +12,10 @@ public class Hitbox : MonoBehaviour
     public bool standaloneTestMode = false;  // toggle in Inspector when no GameManager yet
 
     private MeshRenderer meshRenderer;
-    private bool isActiveTarget = false;
+    public bool isActiveTarget = false;
+
+    [Header("Box Attributes")]
+    public int id = -1;
 
     private void Awake()
     {
@@ -22,6 +25,11 @@ public class Hitbox : MonoBehaviour
         if (standaloneTestMode)
         {
             isActiveTarget = true; // treat as always correct in test mode
+        }
+
+        if (id == -1)
+        {
+            Debug.LogWarning($"{gameObject.name} lacks an ID and will not function.");
         }
     }
 
@@ -39,23 +47,18 @@ public class Hitbox : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("collision is hit");
+        //Debug.Log("Collision is hit");
+        //Debug.Log("PlayerArm tag");
 
-        //if (!other.CompareTag("PlayerArm")) return;
-        Debug.Log("PlayerArm tag");
         if (isActiveTarget && other.tag == "PlayerArm")
         {
-            Debug.Log("active target");
+            Debug.Log("Target hit.");
             SetColor(correctColor);
         }
-        else if(other.tag == "blah blah")
-        {
-            return;
-        }
-        else
+        else if (!isActiveTarget && other.tag == "PlayerArm")
         {
             SetColor(incorrectColor);
-            Debug.Log("incorrect color target");
+            Debug.Log("Incorrect target hit.");
         }
     }
 
@@ -68,8 +71,6 @@ public class Hitbox : MonoBehaviour
     {
         if (meshRenderer != null)
             meshRenderer.material.color = color;
-
-
     }
 
 }

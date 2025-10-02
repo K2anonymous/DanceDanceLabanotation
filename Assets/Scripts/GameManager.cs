@@ -32,6 +32,9 @@ public class GameManager : MonoBehaviour
     public GameObject UICanvas;
     private UI_Script UIManager;
 
+    [Header("Hitboxes")]
+    public Hitbox[] hitboxes;
+
     private void Start()
     {
         if (currentRound < 0)
@@ -101,6 +104,15 @@ public class GameManager : MonoBehaviour
             leftArm = entry.Value;
             Debug.Log($"Left Arm: {leftArm}");
             UIManager.ShowLeftSymbol(leftArm);
+            
+            foreach (Hitbox hitbox in hitboxes)
+            {
+                if (hitbox.id == leftArm)
+                {
+                    hitbox.isActiveTarget = true;
+                }
+            }
+
             yield return new WaitForSeconds(timeBetweenRounds);
         }
     }
@@ -115,6 +127,15 @@ public class GameManager : MonoBehaviour
             rightArm = entry.Value;
             Debug.Log($"Right Arm: {rightArm}");
             UIManager.ShowRightSymbol(rightArm);
+
+            foreach (Hitbox hitbox in hitboxes)
+            {
+                if (hitbox.id == leftArm)
+                {
+                    hitbox.isActiveTarget = true;
+                }
+            }
+
             yield return new WaitForSeconds(timeBetweenRounds);
         }
     }
