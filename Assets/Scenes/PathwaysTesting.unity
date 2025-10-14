@@ -771,6 +771,8 @@ MonoBehaviour:
   transformAction: {fileID: -6308582048920379155, guid: fdc9194aeff1c074fb5887da3ee81eda, type: 3}
   cycleModeAction: {fileID: 2269735333961494597, guid: fdc9194aeff1c074fb5887da3ee81eda, type: 3}
   confirmAction: {fileID: -3249406402670371831, guid: fdc9194aeff1c074fb5887da3ee81eda, type: 3}
+  maintainRatioAction: {fileID: 3171491631508278128, guid: fdc9194aeff1c074fb5887da3ee81eda, type: 3}
+  resetAction: {fileID: 1791948709763187122, guid: fdc9194aeff1c074fb5887da3ee81eda, type: 3}
   moveSpeed: 1
   rotateSpeed: 2
   scaleSpeed: 0.5

@@ -23,6 +23,10 @@ public class ProjectorCalibration : MonoBehaviour
     [SerializeField] private InputActionReference cycleModeAction;
     [Tooltip("Button action to confirm the calibration.")]
     [SerializeField] private InputActionReference confirmAction;
+    [Tooltip("Button action to hold for maintaining scale ratio (e.g., Left Shift).")]
+    [SerializeField] private InputActionReference maintainRatioAction;
+    [Tooltip("Button action to reset the calibration.")]
+    [SerializeField] private InputActionReference resetAction;
 
     [Header("Calibration Settings")]
     [SerializeField] private float moveSpeed = 1.0f;
@@ -37,6 +41,11 @@ public class ProjectorCalibration : MonoBehaviour
     private enum CalibrationMode { Position, Rotation, Scale }
     private CalibrationMode currentMode;
     private bool isCalibrating = false;
+
+    // Variables to store the state AT THE START of a calibration session
+    private Vector3 sessionStartPosition;
+    private Quaternion sessionStartRotation;
+    private Vector3 sessionStartSize;
 
     // PlayerPrefs keys for saving/loading
     private const string CALIBRATION_SAVED_KEY = "ProjectorCalibrationSaved";
@@ -57,6 +66,8 @@ public class ProjectorCalibration : MonoBehaviour
         // Subscribe to input events when the script is active
         cycleModeAction.action.performed += CycleMode;
         confirmAction.action.performed += ConfirmCalibration;
+
+        resetAction.action.performed += ResetCalibration;
     }
 
     private void OnDisable()
@@ -64,6 +75,8 @@ public class ProjectorCalibration : MonoBehaviour
         // Unsubscribe to prevent errors
         cycleModeAction.action.performed -= CycleMode;
         confirmAction.action.performed -= ConfirmCalibration;
+
+        resetAction.action.performed -= ResetCalibration;
     }
 
     /// <summary>
@@ -76,6 +89,11 @@ public class ProjectorCalibration : MonoBehaviour
         if (calibrationUI != null) calibrationUI.SetActive(true);
         currentMode = CalibrationMode.Position;
         UpdateUIMode();
+
+        sessionStartPosition = transform.position;
+        sessionStartRotation = transform.rotation;
+        sessionStartSize = decalProjector.size;
+
         Debug.Log("Calibration started. Mode: Position");
     }
 
@@ -84,15 +102,76 @@ public class ProjectorCalibration : MonoBehaviour
         // Only process input if in calibration mode
         if (!isCalibrating) return;
 
-        HandleMovement();
-        HandleTransform();
+        // Read input from the same action for all modes
+        Vector2 input = transformAction.action.ReadValue<Vector2>();
+
+        switch (currentMode)
+        {
+            case CalibrationMode.Position:
+                // Move along the XZ plane (floor)
+                Vector3 movement = new Vector3(input.x, 0, input.y) * moveSpeed * Time.deltaTime;
+                transform.Translate(movement, Space.World);
+                break;
+
+            case CalibrationMode.Rotation:
+                // Rotate using left/right arrows
+                transform.Rotate(0, input.x * rotateSpeed * Time.deltaTime, 0, Space.World);
+                break;
+
+            case CalibrationMode.Scale:
+                // Check if the maintain ratio key is held down
+
+                if (maintainRatioAction.action.IsPressed())
+                {
+                    // --- UNIFORM SCALING LOGIC ---
+                    // 1. Calculate the original aspect ratio from when calibration started.
+                    float startAspectRatio = (sessionStartSize.z != 0) ? sessionStartSize.x / sessionStartSize.z : 1f;
+
+                    // 2. Prioritize vertical (Up/Down) input for scaling.
+                    float scaleInput = input.y;
+
+                    // 3. Create the change vector, scaling X based on the original ratio.
+                    Vector3 sizeChange = new Vector3(scaleInput * startAspectRatio, scaleInput, 0) * scaleSpeed * Time.deltaTime;
+                    decalProjector.size += sizeChange;
+                }
+                else
+                {
+                    // --- NORMAL SCALING LOGIC ---
+                    // Adjust size on X and Z axes independently
+                    Vector3 sizeChange = new Vector3(input.x, input.y, 0) * scaleSpeed * Time.deltaTime;
+                    decalProjector.size += sizeChange;
+                }
+
+                // Prevent negative scaling in both cases
+                decalProjector.size = new Vector3(
+                    Mathf.Max(decalProjector.size.x, 0.1f),
+                    decalProjector.size.y,
+                    Mathf.Max(decalProjector.size.z, 0.1f)
+                );
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Resets the projector's transform and size to its initial state.
+    /// </summary>
+    private void ResetCalibration(InputAction.CallbackContext context)
+    {
+        if (!isCalibrating) return;
+
+        Debug.Log("Calibration reset to session start.");
+        transform.position = sessionStartPosition;
+        transform.rotation = sessionStartRotation;
+        decalProjector.size = sessionStartSize;
     }
 
     private void HandleMovement()
     {
+        // Only run this logic if we are in Position mode.
         if (currentMode != CalibrationMode.Position) return;
 
-        Vector2 input = moveAction.action.ReadValue<Vector2>();
+        Vector2 input = transformAction.action.ReadValue<Vector2>();
+
         // Move along the XZ plane (floor)
         Vector3 movement = new Vector3(input.x, 0, input.y) * moveSpeed * Time.deltaTime;
         transform.Translate(movement, Space.World);
@@ -100,6 +179,9 @@ public class ProjectorCalibration : MonoBehaviour
 
     private void HandleTransform()
     {
+        // Guard clause to prevent this from running when not in the correct mode.
+        if (currentMode != CalibrationMode.Rotation && currentMode != CalibrationMode.Scale) return;
+
         Vector2 input = transformAction.action.ReadValue<Vector2>();
 
         switch (currentMode)
@@ -143,7 +225,7 @@ public class ProjectorCalibration : MonoBehaviour
         if (calibrationUI != null) calibrationUI.SetActive(false);
 
         // Save the final transform and size
-        SaveCalibration();
+        //SaveCalibration();
 
         // Fire the event to notify other scripts
         OnCalibrationComplete?.Invoke();
@@ -152,50 +234,50 @@ public class ProjectorCalibration : MonoBehaviour
         this.enabled = false;
     }
 
-    private void SaveCalibration()
-    {
-        // Save position, rotation, and size using PlayerPrefs
-        PlayerPrefs.SetFloat("ProjectorPosX", transform.position.x);
-        PlayerPrefs.SetFloat("ProjectorPosY", transform.position.y);
-        PlayerPrefs.SetFloat("ProjectorPosZ", transform.position.z);
-        PlayerPrefs.SetFloat("ProjectorRotY", transform.eulerAngles.y);
-        PlayerPrefs.SetFloat("ProjectorSizeX", decalProjector.size.x);
-        PlayerPrefs.SetFloat("ProjectorSizeZ", decalProjector.size.z);
-        PlayerPrefs.SetInt(CALIBRATION_SAVED_KEY, 1); // Flag that we have saved data
-        PlayerPrefs.Save();
-    }
+    //private void SaveCalibration()
+    //{
+    //    // Save position, rotation, and size using PlayerPrefs
+    //    PlayerPrefs.SetFloat("ProjectorPosX", transform.position.x);
+    //    PlayerPrefs.SetFloat("ProjectorPosY", transform.position.y);
+    //    PlayerPrefs.SetFloat("ProjectorPosZ", transform.position.z);
+    //    PlayerPrefs.SetFloat("ProjectorRotY", transform.eulerAngles.y);
+    //    PlayerPrefs.SetFloat("ProjectorSizeX", decalProjector.size.x);
+    //    PlayerPrefs.SetFloat("ProjectorSizeZ", decalProjector.size.z);
+    //    PlayerPrefs.SetInt(CALIBRATION_SAVED_KEY, 1); // Flag that we have saved data
+    //    PlayerPrefs.Save();
+    //}
 
-    private void LoadCalibration()
-    {
-        if (PlayerPrefs.GetInt(CALIBRATION_SAVED_KEY, 0) == 1)
-        {
-            Debug.Log("Loading saved calibration data.");
-            Vector3 position = new Vector3(
-                PlayerPrefs.GetFloat("ProjectorPosX"),
-                PlayerPrefs.GetFloat("ProjectorPosY"),
-                PlayerPrefs.GetFloat("ProjectorPosZ")
-            );
-            Vector3 eulerAngles = new Vector3(0, PlayerPrefs.GetFloat("ProjectorRotY"), 0);
-            Vector3 size = new Vector3(
-                PlayerPrefs.GetFloat("ProjectorSizeX"),
-                decalProjector.size.y, // Keep the original depth
-                PlayerPrefs.GetFloat("ProjectorSizeZ")
-            );
+    //private void LoadCalibration()
+    //{
+    //    if (PlayerPrefs.GetInt(CALIBRATION_SAVED_KEY, 0) == 1)
+    //    {
+    //        Debug.Log("Loading saved calibration data.");
+    //        Vector3 position = new Vector3(
+    //            PlayerPrefs.GetFloat("ProjectorPosX"),
+    //            PlayerPrefs.GetFloat("ProjectorPosY"),
+    //            PlayerPrefs.GetFloat("ProjectorPosZ")
+    //        );
+    //        Vector3 eulerAngles = new Vector3(0, PlayerPrefs.GetFloat("ProjectorRotY"), 0);
+    //        Vector3 size = new Vector3(
+    //            PlayerPrefs.GetFloat("ProjectorSizeX"),
+    //            decalProjector.size.y, // Keep the original depth
+    //            PlayerPrefs.GetFloat("ProjectorSizeZ")
+    //        );
 
-            transform.position = position;
-            transform.eulerAngles = eulerAngles;
-            decalProjector.size = size;
+    //        transform.position = position;
+    //        transform.eulerAngles = eulerAngles;
+    //        decalProjector.size = size;
 
-            // Immediately invoke the completion event since we loaded data
-            OnCalibrationComplete?.Invoke();
-            this.enabled = false; // No need for calibration
-        }
-        else
-        {
-            // If no saved data, start the calibration process automatically
-            StartCalibration();
-        }
-    }
+    //        // Immediately invoke the completion event since we loaded data
+    //        OnCalibrationComplete?.Invoke();
+    //        this.enabled = false; // No need for calibration
+    //    }
+    //    else
+    //    {
+    //        // If no saved data, start the calibration process automatically
+    //        StartCalibration();
+    //    }
+    //}
 
     private void UpdateUIMode()
     {
