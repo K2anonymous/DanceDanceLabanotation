@@ -27,6 +27,8 @@ public class ProjectorCalibration : MonoBehaviour
     [SerializeField] private InputActionReference maintainRatioAction;
     [Tooltip("Button action to reset the calibration.")]
     [SerializeField] private InputActionReference resetAction;
+    [Tooltip("Button to hold to enable calibration transforms (e.g., Right Grip).")]
+    [SerializeField] private InputActionReference calibrationEnableAction;
 
     [Header("Calibration Settings")]
     [SerializeField] private float moveSpeed = 1.0f;
@@ -105,51 +107,51 @@ public class ProjectorCalibration : MonoBehaviour
         // Read input from the same action for all modes
         Vector2 input = transformAction.action.ReadValue<Vector2>();
 
-        switch (currentMode)
-        {
-            case CalibrationMode.Position:
-                // Move along the XZ plane (floor)
-                Vector3 movement = new Vector3(input.x, 0, input.y) * moveSpeed * Time.deltaTime;
-                transform.Translate(movement, Space.World);
-                break;
+            switch (currentMode)
+            {
+                case CalibrationMode.Position:
+                    // Move along the XZ plane (floor)
+                    Vector3 movement = new Vector3(input.x, 0, input.y) * moveSpeed * Time.deltaTime;
+                    transform.Translate(movement, Space.World);
+                    break;
 
-            case CalibrationMode.Rotation:
-                // Rotate using left/right arrows
-                transform.Rotate(0, input.x * rotateSpeed * Time.deltaTime, 0, Space.World);
-                break;
+                case CalibrationMode.Rotation:
+                    // Rotate using left/right arrows
+                    transform.Rotate(0, input.x * rotateSpeed * Time.deltaTime, 0, Space.World);
+                    break;
 
-            case CalibrationMode.Scale:
-                // Check if the maintain ratio key is held down
+                case CalibrationMode.Scale:
+                    // Check if the maintain ratio key is held down
 
-                if (maintainRatioAction.action.IsPressed())
-                {
-                    // --- UNIFORM SCALING LOGIC ---
-                    // 1. Calculate the original aspect ratio from when calibration started.
-                    float startAspectRatio = (sessionStartSize.z != 0) ? sessionStartSize.x / sessionStartSize.z : 1f;
+                    if (maintainRatioAction.action.IsPressed())
+                    {
+                        // --- UNIFORM SCALING LOGIC ---
+                        // 1. Calculate the original aspect ratio from when calibration started.
+                        float startAspectRatio = (sessionStartSize.z != 0) ? sessionStartSize.x / sessionStartSize.z : 1f;
 
-                    // 2. Prioritize vertical (Up/Down) input for scaling.
-                    float scaleInput = input.y;
+                        // 2. Prioritize vertical (Up/Down) input for scaling.
+                        float scaleInput = input.y;
 
-                    // 3. Create the change vector, scaling X based on the original ratio.
-                    Vector3 sizeChange = new Vector3(scaleInput * startAspectRatio, scaleInput, 0) * scaleSpeed * Time.deltaTime;
-                    decalProjector.size += sizeChange;
-                }
-                else
-                {
-                    // --- NORMAL SCALING LOGIC ---
-                    // Adjust size on X and Z axes independently
-                    Vector3 sizeChange = new Vector3(input.x, input.y, 0) * scaleSpeed * Time.deltaTime;
-                    decalProjector.size += sizeChange;
-                }
+                        // 3. Create the change vector, scaling X based on the original ratio.
+                        Vector3 sizeChange = new Vector3(scaleInput * startAspectRatio, scaleInput, 0) * scaleSpeed * Time.deltaTime;
+                        decalProjector.size += sizeChange;
+                    }
+                    else
+                    {
+                        // --- NORMAL SCALING LOGIC ---
+                        // Adjust size on X and Z axes independently
+                        Vector3 sizeChange = new Vector3(input.x, input.y, 0) * scaleSpeed * Time.deltaTime;
+                        decalProjector.size += sizeChange;
+                    }
 
-                // Prevent negative scaling in both cases
-                decalProjector.size = new Vector3(
-                    Mathf.Max(decalProjector.size.x, 0.1f),
-                    decalProjector.size.y,
-                    Mathf.Max(decalProjector.size.z, 0.1f)
-                );
-                break;
-        }
+                    // Prevent negative scaling in both cases
+                    decalProjector.size = new Vector3(
+                        Mathf.Max(decalProjector.size.x, 0.1f),
+                        decalProjector.size.y,
+                        Mathf.Max(decalProjector.size.z, 0.1f)
+                    );
+                    break;
+            }
     }
 
     /// <summary>
