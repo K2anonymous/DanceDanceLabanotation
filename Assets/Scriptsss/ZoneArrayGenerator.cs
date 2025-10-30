@@ -21,13 +21,13 @@ public class LabanotationZoneGenerator : MonoBehaviour
     public Transform playerHand;
     [Range(0.5f, 1.2f)]
     public float armLengthMultiplier = 0.9f;
-    [Range(0.2f, 0.6f)]
-    public float heightSpacingMultiplier = 0.4f;
+    [Range(0.2f, 10f)]
+    public float heightSpacingMultiplier = 10f;
 
     [Header("Runtime Calibration")]
     [Tooltip("Positions the center of the zones at this height relative to the head (0.75 = chest).")]
     [Range(0.5f, 1.0f)]
-    public float verticalOffsetMultiplier = 1.5f;
+    public float verticalOffsetMultiplier = 0.5f;
     [Tooltip("The name of the button/axis in the Input Manager to trigger calibration.")]
     public string calibrationButtonName = "Fire1"; // Common default for a trigger press
 
@@ -93,13 +93,21 @@ public class LabanotationZoneGenerator : MonoBehaviour
         parent.position = new Vector3(parent.position.x, verticalCenter, parent.position.z);
         Debug.Log($"Array center set to Y: {verticalCenter:F2}");
 
-        // --- 2. CALIBRATE SIZE ---
-        float calibratedHeightSpacing = playerHead.localPosition.y * heightSpacingMultiplier;
+        // --- 2. CALIBRATE SIZE (VERTICAL INCLUDED) ---
+
+        // First, find the arm length radius
         Vector3 handPosition = playerHand.localPosition;
         Vector2 handHorizontalPosition = new Vector2(handPosition.x, handPosition.z);
         float calibratedRadius = handHorizontalPosition.magnitude * armLengthMultiplier;
+
+        // *** NEW ***
+        // Now, base the height spacing on that same radius
+        float calibratedHeightSpacing = calibratedRadius * heightSpacingMultiplier;
+
+        // (The old line was: float calibratedHeightSpacing = playerHead.localPosition.y * heightSpacingMultiplier;)
+
         _isCalibrated = true;
-        Debug.Log($"Calibration complete: HeightSpacing={calibratedHeightSpacing:F2}, Radius={calibratedRadius:F2}");
+        Debug.Log($"Calibration complete: Radius={calibratedRadius:F2}, HeightSpacing={calibratedHeightSpacing:F2}");
 
         // --- 3. GENERATE ZONES ---
         GenerateZonesInternal(calibratedRadius, calibratedHeightSpacing);
@@ -132,9 +140,9 @@ public class LabanotationZoneGenerator : MonoBehaviour
                 string zoneName = $"{currentHeightName} - {directionalNames[j]}";
                 InstantiateZone(position, zoneName, parent);
             }
-            Vector3 centerPosition = new Vector3(0f, yPos, 0f);
-            string centerZoneName = $"{currentHeightName} - Place" + (i == 1 ? " (Center)" : "");
-            InstantiateZone(centerPosition, centerZoneName, parent);
+            //Vector3 centerPosition = new Vector3(0f, yPos, 0f);
+            //string centerZoneName = $"{currentHeightName} - Place" + (i == 1 ? " (Center)" : "");
+            //InstantiateZone(centerPosition, centerZoneName, parent);
         }
 
         Debug.Log($"Successfully generated {_generatedZones.Count} Labanotation Zones.");
