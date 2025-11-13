@@ -1648,8 +1648,8 @@ RectTransform:
   m_GameObject: {fileID: 1855221290}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.04, y: 0.04, z: 0.04}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 710667020}
   - {fileID: 2030980115}
@@ -1675,8 +1675,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 1328623386}
   currentMode: 0
-  followDistance: 1.8
-  topLeftOffset: {x: -0.5, y: 0.3}
+  followDistance: 0.12
+  topLeftOffset: {x: 0.47, y: -0.12}
   topRightOffset: {x: 0.5, y: 0.3}
   bottomLeftOffset: {x: -0.5, y: -0.3}
   bottomRightOffset: {x: 0.5, y: -0.3}
