@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement; // Required for changing scenes
 using TMPro; // Required for TextMeshPro
 
-public class StartMenuManager : MonoBehaviour
+public class TemplateMenuManager : MonoBehaviour
 {
     [Header("UI References")]
     [Tooltip("The text component that displays button descriptions.")]
