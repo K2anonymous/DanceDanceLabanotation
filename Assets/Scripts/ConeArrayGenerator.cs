@@ -82,8 +82,8 @@ public class LabanotationConeGenerator : MonoBehaviour
     {
         ClearExistingZones();
 
-        if (zonePrefab == null) { return; }
-        if (zonePrefab.GetComponent<Hitbox>() == null) { return; }
+        //if (zonePrefab == null) { return; }
+        //if (zonePrefab.GetComponent<Hitbox>() == null) { return; }
 
         Transform parent = zoneParent != null ? zoneParent : transform;
 
@@ -108,7 +108,7 @@ public class LabanotationConeGenerator : MonoBehaviour
                 Quaternion rotation = Quaternion.FromToRotation(Vector3.up, direction);
 
                 string zoneName = $"{currentHeightName} - {directionalNames[j]}";
-
+                Debug.Log("instantiate");
                 InstantiateZone(zoneName, parent, rotation, coneLength);
             }
         }
@@ -133,6 +133,7 @@ public class LabanotationConeGenerator : MonoBehaviour
     // (InstantiateZone is unchanged)
     private void InstantiateZone(string zoneName, Transform parent, Quaternion rotation, float length)
     {
+        Debug.Log("InstantiateZone");
         GameObject newZoneObj = Instantiate(zonePrefab, parent);
         newZoneObj.transform.localPosition = Vector3.zero;
         newZoneObj.transform.localRotation = rotation;
