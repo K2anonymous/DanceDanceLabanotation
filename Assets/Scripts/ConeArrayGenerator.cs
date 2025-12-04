@@ -36,6 +36,12 @@ public class LabanotationConeGenerator : MonoBehaviour
     /// <summary>
     /// This method is called by the PlayerInput component when the 'Calibrate' action is performed.
     /// </summary>
+    /// 
+
+    private void Awake()
+    {
+        Debug.Log("test");
+    }
     public void OnCalibrate(InputAction.CallbackContext context)
     {
         // We check for 'performed' to make sure it only runs once per press
